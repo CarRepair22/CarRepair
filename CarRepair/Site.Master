@@ -33,13 +33,18 @@
 	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;600;700;800;900&family=Roboto+Condensed:wght@300;400;700&display=swap" rel="stylesheet">
 
 	<!-- All PLUGINS CSS ============================================= -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
 	<link rel="stylesheet" href="Idle/owl-carousel/owl.carousel.css">
     <link rel="stylesheet" href="Idle/magnific-popup/magnific-popup.min.css">
     <link rel="stylesheet" href="Idle/bootstrap-select/bootstrap-select.min.css">
 	<link rel="stylesheet" href="Idle/swiper/swiper.min.css">
 	<link rel="stylesheet" type="text/css" href="Idle/style.css">
-
-
+    <link rel="stylesheet" type="text/css" href="toastui/css/default.css">
+    <link rel="stylesheet" type="text/css" href="toastui/css/icons.css">
+    <link rel="stylesheet" type="text/css" href="toastui/css/tui-example-style.css">
+    <link href="toastui/dist/tui-calendar.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.css">
+    <link rel="stylesheet" type="text/css" href="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.css">
 </head>
 <body>
     <%--<div id="loading-icon-bx"><div class="loader"></div></div>--%>
@@ -324,7 +329,7 @@
 	<button class="back-to-top fa fa-chevron-up"></button>
       
         <!-- External JavaScripts -->
-           <script src="js/jquery.min.js"></script>
+           <%--<script src="js/jquery.min.js"></script>--%>
 <script src="Idle/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script src="Idle/bootstrap-select/bootstrap-select.min.js"></script>
 <script src="Idle/magnific-popup/magnific-popup.js"></script>
@@ -335,6 +340,21 @@
 <script src="Idle/swiper/swiper.min.js"></script>
 <script src="js/functions.js"></script>
 <script src="js/contact.js"></script>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"  crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+<script src="https://uicdn.toast.com/tui.code-snippet/v1.5.2/tui-code-snippet.min.js"></script>
+<script src="https://uicdn.toast.com/tui.time-picker/v2.0.3/tui-time-picker.min.js"></script>
+<script src="https://uicdn.toast.com/tui.date-picker/v4.0.3/tui-date-picker.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chance/1.0.13/chance.min.js"></script>
+
+<%--<script src="toastui/js/default.js"></script>--%>
+<%--<script src="toastui/js/default.js"></script>--%>
+<script src="toastui/dist/tui-calendar.js"></script>
+<script src="toastui/js/data/calendars.js"></script>
+<script src="toastui/js/data/schedules.js"></script>
+<%--<script src="toastui/js/theme/dooray.js"></script>--%>
+<script src="toastui/js/app.js"></script>
     </form>
         </div>
 </body>
