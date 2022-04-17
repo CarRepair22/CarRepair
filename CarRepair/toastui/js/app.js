@@ -264,13 +264,14 @@
         }
     }
     function saveNewSchedule(scheduleData) {
+        //schedule.end.toUTCString()
         var calendar = scheduleData.calendar || findCalendar(scheduleData.calendarId);
         var schedule = {
             id: String(chance.guid()),
             title: scheduleData.title,
             isAllDay: scheduleData.isAllDay,
-            start: scheduleData.start,
-            end: scheduleData.end,
+            start: scheduleData.start.toUTCString(),
+            end: scheduleData.end.toUTCString(),
             category: scheduleData.isAllDay ? 'allday' : 'time',
             dueDateClass: '',
             color: calendar.color,
@@ -291,6 +292,7 @@
         cal.createSchedules([schedule]);
 
         refreshScheduleVisibility();
+        postData(schedule);
     }
 
     function onChangeCalendars(e) {
@@ -401,9 +403,9 @@
         cal.clear();
         generateSchedule(cal.getViewName(), cal.getDateRangeStart(), cal.getDateRangeEnd());
         console.log(ScheduleList);
-        cal.createSchedules(ScheduleList);
+        //cal.createSchedules(ScheduleList);
 
-        refreshScheduleVisibility();
+        //refreshScheduleVisibility();
     }
 
     function setEventListener() {
@@ -433,6 +435,37 @@
     setRenderRangeText();
     setSchedules();
     setEventListener();
+    $(function () {
+        $.ajax({
+            type: "GET",
+            url: "Booking.aspx/GetSchduleData",
+            data: '{}',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: OnSuccess,
+            failure: function (response) {
+                alert(response);
+            },
+            error: function (response) {
+                alert(response);
+            }
+        });
+    });
+
+
+    function OnSuccess(response) {
+        ScheduleList = [];
+        for (let i = 0; i < response.d.length; i++) {
+            let data = response.d[i];
+            let scheduleData = createScheduleList(data);
+            ScheduleList.push(scheduleData);
+        }
+        console.log(ScheduleList);
+        cal.createSchedules(ScheduleList);
+        refreshScheduleVisibility();
+    }
+
+
 })(window, tui.Calendar);
 
 // set calendars
@@ -449,3 +482,75 @@
     });
     calendarList.innerHTML = html.join('\n');
 })();
+
+
+function createScheduleList(data) {
+    var schedule = new ScheduleInfo();
+
+    schedule.id = data.id;
+    schedule.calendarId = data.calendarId;
+
+    schedule.title = data.title;
+    schedule.body = data.body;
+    schedule.location = data.location;
+    schedule.start = data.start;
+    schedule.end = data.end;
+    schedule.category = data.category;
+    schedule.dueDateClass = data.dueDateClass;
+    schedule.color = data.color;
+    schedule.bgColor = data.bgColor;
+    schedule.dragBgColor = data.dragBgColor;
+    schedule.borderColor = data.borderColor;
+    schedule.isFocused = data.isFocused;
+    schedule.isPending = data.isPending;
+    schedule.isVisible = data.isVisible;
+    schedule.isReadOnly = data.isReadOnly;
+    schedule.isPrivate = data.isPrivate;
+    schedule.goingDuration = data.goingDuration;
+    schedule.comingDuration = data.comingDuration;
+    schedule.recurrenceRule = data.recurrenceRule;
+    schedule.state = 'Free';
+    if (data.raw !== undefined) {
+        schedule.raw.memo = data.raw.memo;
+        schedule.raw.creator.name = data.raw.creator.name;
+        schedule.raw.creator.avatar = data.raw.creator.avatar;
+        schedule.raw.creator.company = data.raw.creator.company;
+        schedule.raw.creator.email = data.raw.creator.email;
+        schedule.raw.creator.phone = data.raw.creator.phone;
+    }
+    
+    schedule.attendees = [];
+    
+    return schedule;
+    
+}
+
+function postData(data) {
+    let schedule = createScheduleList(data);
+
+    var values = { 'schedule': schedule };
+$.ajax({
+    type: "POST",
+    url: "Booking.aspx/SaveScheduleData",
+    data: JSON.stringify(values),
+    contentType: "application/json; charset=utf-8",
+    dataType: "json",
+    success: OnSuccessPost,
+    failure: function (response) {
+        console.log(response);
+       alert(response);
+    },
+    error: function (response) {
+        console.log(response);
+        alert(response);
+    }
+});
+}
+
+function OnSuccessPost() {
+    console.log('onsuccess post');
+}
+
+$('.tui-full-calendar-button').click(function (e) {
+    e.preventDefault();
+});
