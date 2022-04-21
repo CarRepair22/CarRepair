@@ -171,6 +171,7 @@
     <Content Include="Account\VerifyPhoneNumber.aspx" />
     <Content Include="Booking.aspx" />
     <Content Include="booking.html" />
+    <Content Include="booking1.html" />
     <Content Include="Contact.aspx" />
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\bootstrap-theme.min.css" />
@@ -2197,6 +2198,7 @@
     <Content Include="toastui\images\img-bi%402x.png" />
     <Content Include="toastui\images\img-bi%403x.png" />
     <Content Include="toastui\images\img-bi.png" />
+    <Content Include="toastui\js\app1.js" />
     <Content Include="toastui\js\app.js" />
     <Content Include="toastui\js\data\calendars.js" />
     <Content Include="toastui\js\data\schedules.js" />
@@ -2338,6 +2340,8 @@
     <Compile Include="Contact.aspx.designer.cs">
       <DependentUpon>Contact.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Database\AdoHelper.cs" />
+    <Compile Include="Database\DatabaseContext.cs" />
     <Compile Include="Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

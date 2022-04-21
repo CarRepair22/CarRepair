@@ -31,6 +31,7 @@ namespace CarRepair.Models
         public string comingDuration { get; set; }
         public string recurrenceRule { get; set; }
         public string state { get; set; }
+        public string appointmentType { get; set; }
         public Raw raw { get; set; }
     }
 

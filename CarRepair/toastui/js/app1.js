@@ -8,7 +8,7 @@
 (function(window, Calendar) {
     var cal, resizeThrottled;
     var useCreationPopup = false;
-    var useDetailPopup = false;
+    var useDetailPopup = true;
     var datePicker, selectedCalendar;
 
     cal = new Calendar('#calendar', {
@@ -42,7 +42,31 @@
         },
         'beforeCreateSchedule': function(e) {
             console.log('beforeCreateSchedule', e);
-            saveNewSchedule(e);
+            $('#showModal').modal('show');
+            let localStartDate = new Date(e.start.toUTCString());
+            let localEndDate = new Date(e.end.toUTCString());
+            $("#startDate").val(localStartDate.toLocaleString());
+            $("#endDate").val(localEndDate.toLocaleString());
+            currentScheduleData = e;
+            //$("#startDate").val(e.start.toUTCString());
+            //$("#endDate").val(e.end.toUTCString());
+            //$(".showSchedulePopup").css({ left: leftPosition });
+            //$(".showSchedulePopup").css({ top: rightPosition });
+
+            ////saveNewSchedule(e);
+            //const title = prompt('Schedule', '@suvrity\'s birthday');
+            //var schedule = {
+            //    id: +new Date(),
+            //    title: title,
+            //    isAllDay: true,
+            //    start: e.start,
+            //    end: e.end,
+            //    category: 'allday'
+            //};
+            ///* step2. save schedule */
+            //cal.createSchedules([schedule]);
+            /* step3. clear guide element */
+            //e.guide.clearGuideElement();
         },
         'beforeUpdateSchedule': function(e) {
             var schedule = e.schedule;
@@ -263,37 +287,7 @@
             });
         }
     }
-    function saveNewSchedule(scheduleData) {
-        //schedule.end.toUTCString()
-        var calendar = scheduleData.calendar || findCalendar(scheduleData.calendarId);
-        var schedule = {
-            id: String(chance.guid()),
-            title: scheduleData.title,
-            isAllDay: scheduleData.isAllDay,
-            start: scheduleData.start.toUTCString(),
-            end: scheduleData.end.toUTCString(),
-            category: scheduleData.isAllDay ? 'allday' : 'time',
-            dueDateClass: '',
-            color: calendar.color,
-            bgColor: calendar.bgColor,
-            dragBgColor: calendar.bgColor,
-            borderColor: calendar.borderColor,
-            location: scheduleData.location,
-            isPrivate: scheduleData.isPrivate,
-            state: scheduleData.state
-        };
-        if (calendar) {
-            schedule.calendarId = calendar.id;
-            schedule.color = calendar.color;
-            schedule.bgColor = calendar.bgColor;
-            schedule.borderColor = calendar.borderColor;
-        }
-
-        cal.createSchedules([schedule]);
-
-        refreshScheduleVisibility();
-        postData(schedule);
-    }
+    
 
     function onChangeCalendars(e) {
         var calendarId = e.target.value;
@@ -431,10 +425,10 @@
 
     window.cal = cal;
 
-    setDropdownCalendarType();
-    setRenderRangeText();
-    setSchedules();
-    setEventListener();
+    //setDropdownCalendarType();
+    //setRenderRangeText();
+    //setSchedules();
+    //setEventListener();
     $(function () {
         $.ajax({
             type: "GET",
@@ -466,91 +460,147 @@
     }
 
 
+
+    function createScheduleList(data) {
+        var schedule = new ScheduleInfo();
+
+        schedule.id = data.id;
+        schedule.calendarId = data.calendarId;
+
+        schedule.title = data.title;
+        schedule.body = data.body;
+        schedule.location = data.location;
+        schedule.start = data.start;
+        schedule.end = data.end;
+        schedule.category = data.category;
+        schedule.dueDateClass = data.dueDateClass;
+        schedule.color = data.color;
+        schedule.bgColor = data.bgColor;
+        schedule.dragBgColor = data.dragBgColor;
+        schedule.borderColor = data.borderColor;
+        schedule.isFocused = data.isFocused;
+        schedule.isPending = data.isPending;
+        schedule.isVisible = data.isVisible;
+        schedule.isReadOnly = data.isReadOnly;
+        schedule.isPrivate = data.isPrivate;
+        schedule.goingDuration = data.goingDuration;
+        schedule.comingDuration = data.comingDuration;
+        schedule.recurrenceRule = data.recurrenceRule;
+        schedule.state = 'Free';
+        if (data.raw !== undefined) {
+            schedule.raw.memo = data.raw.memo;
+            schedule.raw.creator.name = data.raw.creator.name;
+            schedule.raw.creator.avatar = data.raw.creator.avatar;
+            schedule.raw.creator.company = data.raw.creator.company;
+            schedule.raw.creator.email = data.raw.creator.email;
+            schedule.raw.creator.phone = data.raw.creator.phone;
+        }
+
+        schedule.attendees = [];
+        schedule.appointmentType = $("#appointmentType option:selected").text();
+
+        return schedule;
+
+    }
+
+    function postData(data) {
+        let schedule = createScheduleList(data);
+
+        var values = { 'schedule': schedule };
+        $.ajax({
+            type: "POST",
+            url: "Booking.aspx/SaveScheduleData",
+            data: JSON.stringify(values),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: OnSuccessPost,
+            failure: function (response) {
+                console.log(response);
+                alert(response);
+            },
+            error: function (response) {
+                console.log(response);
+                alert(response);
+            }
+        });
+    }
+
+    function OnSuccessPost() {
+        console.log('onsuccess post');
+    }
+
+    $('.tui-full-calendar-button').click(function (e) {
+        e.preventDefault();
+    });
+    /////////
+    let currentScheduleData;
+    $(document).ready(
+        function () {
+            $("#saveAppointment").click(saveAppointment);
+            $("#closeModal").click(closeModal);
+            $("#modalCloseButton").click(closeModal);
+
+        }
+    );
+    function saveAppointment() {
+        console.log("save ");
+        let startDate = $("").val();
+        let endDate = $("").val();
+        saveNewSchedule(currentScheduleData);
+    }
+
+    function closeModal() {
+        $('#showModal').modal('hide');
+    }
+
+    function saveNewSchedule(scheduleData) {
+        //schedule.end.toUTCString()
+        var calendar = scheduleData.calendar || findCalendar(scheduleData.calendarId);
+        var schedule = {
+            id: String(chance.guid()),
+            title: scheduleData.title,
+            isAllDay: scheduleData.isAllDay,
+            start: scheduleData.start.toUTCString(),
+            end: scheduleData.end.toUTCString(),
+            category: scheduleData.isAllDay ? 'allday' : 'time',
+            dueDateClass: '',
+            color: calendar.color,
+            bgColor: calendar.bgColor,
+            dragBgColor: calendar.bgColor,
+            borderColor: calendar.borderColor,
+            location: scheduleData.location,
+            isPrivate: scheduleData.isPrivate,
+            state: scheduleData.state
+        };
+        if (calendar) {
+            schedule.calendarId = calendar.id;
+            schedule.color = calendar.color;
+            schedule.bgColor = calendar.bgColor;
+            schedule.borderColor = calendar.borderColor;
+        }
+
+        cal.createSchedules([schedule]);
+
+        refreshScheduleVisibility();
+        postData(schedule);
+    }
+
+
 })(window, tui.Calendar);
 
 // set calendars
-(function() {
-    var calendarList = document.getElementById('calendarList');
-    var html = [];
-    CalendarList.forEach(function(calendar) {
-        html.push('<div class="lnb-calendars-item"><label>' +
-            '<input type="checkbox" class="tui-full-calendar-checkbox-round" value="' + calendar.id + '" checked>' +
-            '<span style="border-color: ' + calendar.borderColor + '; background-color: ' + calendar.borderColor + ';"></span>' +
-            '<span>' + calendar.name + '</span>' +
-            '</label></div>'
-        );
-    });
-    calendarList.innerHTML = html.join('\n');
-})();
+//(function() {
+//    var calendarList = document.getElementById('calendarList');
+//    var html = [];
+//    CalendarList.forEach(function(calendar) {
+//        html.push('<div class="lnb-calendars-item"><label>' +
+//            '<input type="checkbox" class="tui-full-calendar-checkbox-round" value="' + calendar.id + '" checked>' +
+//            '<span style="border-color: ' + calendar.borderColor + '; background-color: ' + calendar.borderColor + ';"></span>' +
+//            '<span>' + calendar.name + '</span>' +
+//            '</label></div>'
+//        );
+//    });
+//    calendarList.innerHTML = html.join('\n');
+//})();
 
 
-function createScheduleList(data) {
-    var schedule = new ScheduleInfo();
-
-    schedule.id = data.id;
-    schedule.calendarId = data.calendarId;
-
-    schedule.title = data.title;
-    schedule.body = data.body;
-    schedule.location = data.location;
-    schedule.start = data.start;
-    schedule.end = data.end;
-    schedule.category = data.category;
-    schedule.dueDateClass = data.dueDateClass;
-    schedule.color = data.color;
-    schedule.bgColor = data.bgColor;
-    schedule.dragBgColor = data.dragBgColor;
-    schedule.borderColor = data.borderColor;
-    schedule.isFocused = data.isFocused;
-    schedule.isPending = data.isPending;
-    schedule.isVisible = data.isVisible;
-    schedule.isReadOnly = data.isReadOnly;
-    schedule.isPrivate = data.isPrivate;
-    schedule.goingDuration = data.goingDuration;
-    schedule.comingDuration = data.comingDuration;
-    schedule.recurrenceRule = data.recurrenceRule;
-    schedule.state = 'Free';
-    if (data.raw !== undefined) {
-        schedule.raw.memo = data.raw.memo;
-        schedule.raw.creator.name = data.raw.creator.name;
-        schedule.raw.creator.avatar = data.raw.creator.avatar;
-        schedule.raw.creator.company = data.raw.creator.company;
-        schedule.raw.creator.email = data.raw.creator.email;
-        schedule.raw.creator.phone = data.raw.creator.phone;
-    }
-    
-    schedule.attendees = [];
-    
-    return schedule;
-    
-}
-
-function postData(data) {
-    let schedule = createScheduleList(data);
-
-    var values = { 'schedule': schedule };
-$.ajax({
-    type: "POST",
-    url: "Booking.aspx/SaveScheduleData",
-    data: JSON.stringify(values),
-    contentType: "application/json; charset=utf-8",
-    dataType: "json",
-    success: OnSuccessPost,
-    failure: function (response) {
-        console.log(response);
-       alert(response);
-    },
-    error: function (response) {
-        console.log(response);
-        alert(response);
-    }
-});
-}
-
-function OnSuccessPost() {
-    console.log('onsuccess post');
-}
-
-$('.tui-full-calendar-button').click(function (e) {
-    e.preventDefault();
-});

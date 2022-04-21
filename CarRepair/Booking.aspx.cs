@@ -8,6 +8,7 @@ using CarRepair.Models;
 using System.Web.Script.Serialization;
 using System.Web.Services;
 using System.Web.Script.Services;
+using CarRepair.Database;
 
 namespace CarRepair
 {
@@ -131,9 +132,12 @@ namespace CarRepair
         [WebMethod]
         public static string SaveScheduleData(ScheduleModel schedule)
         {
-            List<ScheduleModel> scheduleModels = new List<ScheduleModel>();
-            scheduleModels = HttpContext.Current.Session["scheduleList"] as List<ScheduleModel>;
-            scheduleModels.Add(schedule);
+            //List<ScheduleModel> scheduleModels = new List<ScheduleModel>();
+            //scheduleModels = HttpContext.Current.Session["scheduleList"] as List<ScheduleModel>;
+            //scheduleModels.Add(schedule);
+            DatabaseContext databaseContext = new DatabaseContext();
+            databaseContext.InsertBookingData(schedule);
+
             return "Ok";
         }
 
